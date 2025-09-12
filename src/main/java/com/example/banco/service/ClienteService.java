@@ -4,8 +4,7 @@ import java.util.List;
 import com.example.banco.modelo.Cliente;
 
 public interface ClienteService {
-List<Cliente> obtenerTodas();
+    List<Cliente> obtenerTodas();
     Cliente crearCliente(Cliente cliente);
-    Cliente buscarPorNombre(String nombre);
-    
+    Cliente buscarPorIdentificacion(String identificacion);
 }
