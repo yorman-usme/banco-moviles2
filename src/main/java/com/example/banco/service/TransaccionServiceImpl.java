@@ -1,11 +1,11 @@
 package com.example.banco.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.example.banco.modelo.Transaccion;
 import com.example.banco.repository.TransaccionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TransaccionServiceImpl implements TransaccionService {
@@ -19,45 +19,36 @@ public class TransaccionServiceImpl implements TransaccionService {
     }
 
     @Override
+    public Transaccion obtenerTransaccionPorId(Long id) {
+        return transaccionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transacción no encontrada con id: " + id));
+    }
+
+    @Override
     public Transaccion crearTransaccion(Transaccion transaccion) {
-        // 🔹 VALIDACIONES MANUALES
-        if (transaccion == null) {
-            throw new IllegalArgumentException("La transacción no puede ser nula");
+        if (transaccion.getCuenta() == null) {
+            throw new RuntimeException("La transacción debe estar asociada a una cuenta.");
         }
-
-        if (transaccion.getTipo() == null || transaccion.getTipo().isBlank()) {
-            throw new IllegalArgumentException("El tipo de transacción es obligatorio");
-        }
-
-        if (!transaccion.getTipo().equalsIgnoreCase("DEPOSITO")
-                && !transaccion.getTipo().equalsIgnoreCase("RETIRO")
-                && !transaccion.getTipo().equalsIgnoreCase("TRANSFERENCIA")) {
-            throw new IllegalArgumentException("Tipo de transacción inválido (DEPOSITO, RETIRO, TRANSFERENCIA)");
-        }
-
         if (transaccion.getMonto() <= 0) {
-            throw new IllegalArgumentException("El monto debe ser mayor que 0");
+            throw new RuntimeException("El monto debe ser mayor que cero.");
         }
-
-        if (transaccion.getCuentaOrigen() == null) {
-            throw new IllegalArgumentException("Debe especificar la cuenta origen");
-        }
-
-        // Si es transferencia, debe haber cuenta destino y diferente de la origen
-        if (transaccion.getTipo().equalsIgnoreCase("TRANSFERENCIA")) {
-            if (transaccion.getCuentaDestino() == null) {
-                throw new IllegalArgumentException("Debe especificar la cuenta destino para la transferencia");
-            }
-            if (transaccion.getCuentaOrigen().getId().equals(transaccion.getCuentaDestino().getId())) {
-                throw new IllegalArgumentException("La cuenta origen y destino no pueden ser la misma");
-            }
-        }
-
-        // Asignar fecha automática si no se envía
-        if (transaccion.getFecha() == null) {
-            transaccion.setFecha(LocalDateTime.now());
-        }
-
         return transaccionRepository.save(transaccion);
+    }
+
+    @Override
+    public Transaccion actualizarTransaccion(Long id, Transaccion transaccionActualizada) {
+        Transaccion transaccion = obtenerTransaccionPorId(id);
+        transaccion.setTipo(transaccionActualizada.getTipo());
+        transaccion.setMonto(transaccionActualizada.getMonto());
+        transaccion.setCuenta(transaccionActualizada.getCuenta());
+        return transaccionRepository.save(transaccion);
+    }
+
+    @Override
+    public void eliminarTransaccion(Long id) {
+        if (!transaccionRepository.existsById(id)) {
+            throw new RuntimeException("No se puede eliminar. La transacción no existe.");
+        }
+        transaccionRepository.deleteById(id);
     }
 }
