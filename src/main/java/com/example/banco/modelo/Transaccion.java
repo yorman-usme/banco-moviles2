@@ -4,36 +4,29 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "transacciones")
-public class Transaccion { 
+public class Transaccion {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "cuenta_origen_id", nullable = false)
-    private Long cuentaOrigenId;
+    private String tipo; // "DEPOSITO", "RETIRO", "TRANSFERENCIA"
 
-    @Column(name = "cuenta_destino_id", nullable = false)
-    private Long cuentaDestinoId;
+    private double monto;
 
-    @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal monto;
+    private LocalDateTime fecha;
 
-    @Column(name = "fecha_transaccion", nullable = false)
-    private LocalDateTime fechaTransaccion;
+    // Relación con Cuenta
+    @ManyToOne
+    private Cuenta cuentaOrigen;
 
-    @Column(name = "tipo_transaccion", nullable = false, length = 20)
-    private String tipoTransaccion;
-
-    @Column(length = 200)
-    private String descripcion;
+    // Para transferencias puedes agregar cuentaDestino (opcional)
+    @ManyToOne
+    private Cuenta cuentaDestino;
 }
-
