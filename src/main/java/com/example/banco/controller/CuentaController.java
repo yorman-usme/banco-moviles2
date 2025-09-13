@@ -1,35 +1,43 @@
 package com.example.banco.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.example.banco.modelo.Cuenta;
 import com.example.banco.service.CuentaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/categoria") // Mapea todas las peticiones a esta URL base
+@RequestMapping("/api/v1/cuentas")
 @CrossOrigin(origins = "*")
 public class CuentaController {
-    
-        @Autowired
-    private CuentaService cuentaServise;
+
+    @Autowired
+    private CuentaService cuentaService;
 
     @GetMapping
-    public List<Cuenta> obtenerTodos(){
-        return cuentaServise.obtenerCuentas();
+    public List<Cuenta> obtenerTodas() {
+        return cuentaService.obtenerCuentas();
+    }
+
+    @GetMapping("/{id}")
+    public Cuenta obtenerPorId(@PathVariable Long id) {
+        return cuentaService.obtenerCuentaPorId(id);
     }
 
     @PostMapping
- public Cuenta crearProducto(@RequestBody Cuenta nuevCuenta) {
-    return cuentaServise.crearCuenta(nuevCuenta);
+    public Cuenta crearCuenta(@RequestBody Cuenta nuevaCuenta) {
+        return cuentaService.crearCuenta(nuevaCuenta);
     }
 
+    @PutMapping("/{id}")
+    public Cuenta actualizarCuenta(@PathVariable Long id, @RequestBody Cuenta cuentaActualizada) {
+        return cuentaService.actualizarCuenta(id, cuentaActualizada);
+    }
+
+    @DeleteMapping("/{id}")
+    public String eliminarCuenta(@PathVariable Long id) {
+        cuentaService.eliminarCuenta(id);
+        return "Cuenta eliminada con éxito";
+    }
 }
