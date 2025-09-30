@@ -1,10 +1,14 @@
 package com.example.banco.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.banco.dto.ClienteDTO;
+import com.example.banco.dto.ClienteCreateDTO;
+import com.example.banco.mapper.ClienteMapper;
 import com.example.banco.modelo.Cliente;
 import com.example.banco.repository.ClienteRepository;
 
@@ -14,19 +18,28 @@ public class ClienteServiceImpl implements ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private ClienteMapper clienteMapper;
+
     @Override
-    public Cliente buscarPorIdentificacion(String identificacion) {
-        return clienteRepository.findByIdentificacion(identificacion);
+    public ClienteDTO buscarPorIdentificacion(String identificacion) {
+        Cliente cliente = clienteRepository.findByIdentificacion(identificacion);
+        return clienteMapper.toDTO(cliente);
     }
 
     @Override
-    public List<Cliente> obtenerTodas() {
-        return clienteRepository.findAll();
+    public List<ClienteDTO> obtenerTodas() {
+        return clienteRepository.findAll()
+                .stream()
+                .map(clienteMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Cliente crearCliente(Cliente cliente) {
+    public ClienteDTO crearCliente(ClienteCreateDTO clienteDTO) {
+        Cliente cliente = clienteMapper.toEntity(clienteDTO);
 
+        // 🔹 Validaciones (igual que antes)
         if (cliente.getIdentificacion() == null || cliente.getIdentificacion().isBlank()) {
             throw new RuntimeException("La identificación no puede estar vacía.");
         }
@@ -58,6 +71,7 @@ public class ClienteServiceImpl implements ClienteService {
             throw new RuntimeException("El teléfono debe contener entre 7 y 10 dígitos.");
         }
 
-        return clienteRepository.save(cliente);
+        Cliente guardado = clienteRepository.save(cliente);
+        return clienteMapper.toDTO(guardado);
     }
 }
