@@ -10,5 +10,5 @@ public class PagosDTO {
     private Double monto;
     private String metodoPago;
     private LocalDateTime fechaPago;
-    private Long clienteId; // solo devolvemos el id del cliente
+    private Long clienteId; 
 }

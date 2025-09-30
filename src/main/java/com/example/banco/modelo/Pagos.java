@@ -1,8 +1,14 @@
 package com.example.banco.modelo;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 public class Pagos {
 
@@ -10,60 +16,26 @@ public class Pagos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
+    @NotBlank(message = "El nombre del pago es obligatorio")
     private String nombrePago;
+
+    @Column(nullable = false)
+    @NotNull(message = "El monto es obligatorio")
+    @Positive(message = "El monto debe ser mayor que cero")
     private Double monto;
+
+    @Column(nullable = false, length = 50)
+    @NotBlank(message = "El método de pago es obligatorio")
     private String metodoPago;
+
+    @Column(nullable = false)
+    @NotNull(message = "La fecha del pago es obligatoria")
     private LocalDateTime fechaPago;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    @NotNull(message = "El cliente es obligatorio")
     private Cliente cliente;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombrePago() {
-        return nombrePago;
-    }
-
-    public void setNombrePago(String nombrePago) {
-        this.nombrePago = nombrePago;
-    }
-
-    public Double getMonto() {
-        return monto;
-    }
-
-    public void setMonto(Double monto) {
-        this.monto = monto;
-    }
-
-    public String getMetodoPago() {
-        return metodoPago;
-    }
-
-    public void setMetodoPago(String metodoPago) {
-        this.metodoPago = metodoPago;
-    }
-
-    public LocalDateTime getFechaPago() {
-        return fechaPago;
-    }
-
-    public void setFechaPago(LocalDateTime fechaPago) {
-        this.fechaPago = fechaPago;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
 }

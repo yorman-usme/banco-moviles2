@@ -7,5 +7,5 @@ public class TransaccionDTO {
     private Long id;
     private String tipo;
     private double monto;
-    private Long cuentaId; // solo devolvemos el id de la cuenta
+    private Long cuentaId; 
 }
