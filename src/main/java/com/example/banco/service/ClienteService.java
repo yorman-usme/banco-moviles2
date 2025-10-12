@@ -8,4 +8,5 @@ public interface ClienteService {
     List<ClienteDTO> obtenerTodas();
     ClienteDTO crearCliente(ClienteCreateDTO clienteDTO);
     ClienteDTO buscarPorIdentificacion(String identificacion);
+    ClienteDTO autenticar(String correoElectronico, String password);
 }

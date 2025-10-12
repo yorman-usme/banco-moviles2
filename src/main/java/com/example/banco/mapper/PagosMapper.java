@@ -18,5 +18,7 @@ public interface PagosMapper {
 
     // De CreateDTO a entidad
     @Mapping(source = "clienteId", target = "cliente.id")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fechaPago", ignore = true)
     Pagos toEntity(PagosCreateDTO pagoCreateDTO);
 }
