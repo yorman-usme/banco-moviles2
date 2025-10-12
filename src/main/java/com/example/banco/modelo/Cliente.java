@@ -19,13 +19,24 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String identificacion; 
+    @Column(name = "identificacion", nullable = false, unique = true, length = 20)
+    private String identificacion;
 
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
+
+    @Column(name = "apellido", nullable = false, length = 50)
     private String apellido;
+
+    @Column(name = "direccion", nullable = false, length = 100)
     private String direccion;
+
+    @Column(name = "telefono", nullable = false, length = 15)
     private String telefono;
+
+    @Column(name = "correo_electronico", nullable = false, length = 100)
     private String correo_electronico;
-    private String fecha_nacimiento;
+
+    @Column(name = "fecha_nacimiento", nullable = false, length = 10)
+    private String fecha_nacimiento; // formato esperado: "YYYY-MM-DD"
 }

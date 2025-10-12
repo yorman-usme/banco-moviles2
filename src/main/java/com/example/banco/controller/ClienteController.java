@@ -1,11 +1,11 @@
 package com.example.banco.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.banco.modelo.Cliente;
+import com.example.banco.dto.ClienteDTO;
+import com.example.banco.dto.ClienteCreateDTO;
 import com.example.banco.service.ClienteService;
 
 @RestController
@@ -17,17 +17,17 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @GetMapping("/buscar")
-    public Cliente buscarPorIdentificacion(@RequestParam String identificacion) {
+    public ClienteDTO buscarPorIdentificacion(@RequestParam String identificacion) {
         return clienteService.buscarPorIdentificacion(identificacion);
     }
 
     @GetMapping
-    public List<Cliente> obtenerTodos() {
+    public List<ClienteDTO> obtenerTodos() {
         return clienteService.obtenerTodas();
     }
 
     @PostMapping
-    public Cliente crearCliente(@RequestBody Cliente nuevoCliente) {
+    public ClienteDTO crearCliente(@RequestBody ClienteCreateDTO nuevoCliente) {
         return clienteService.crearCliente(nuevoCliente);
     }
 }
