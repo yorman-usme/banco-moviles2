@@ -6,6 +6,8 @@ import com.example.banco.mapper.CuentaMapper;
 import com.example.banco.modelo.Cuenta;
 import com.example.banco.service.CuentaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,5 +53,15 @@ public class CuentaController {
     public String eliminarCuenta(@PathVariable Long id) {
         cuentaService.eliminarCuenta(id);
         return "Cuenta eliminada con éxito";
+    }
+
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<CuentaDTO> obtenerCuentaPorCliente(@PathVariable Long clienteId) {
+        try {
+            CuentaDTO cuenta = cuentaService.obtenerCuentaPorClienteId(clienteId);
+            return ResponseEntity.ok(cuenta);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }

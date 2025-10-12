@@ -18,5 +18,7 @@ public interface CuentaMapper {
 
     // De CreateDTO a entidad
     @Mapping(source = "clienteId", target = "cliente.id")
+    @Mapping(target = "id", ignore = true)
+    
     Cuenta toEntity(CuentaCreateDTO cuentaCreateDTO);
 }

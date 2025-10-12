@@ -1,5 +1,6 @@
 package com.example.banco.service;
 
+import com.example.banco.dto.CuentaDTO;
 import com.example.banco.modelo.Cuenta;
 import com.example.banco.repository.CuentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +48,12 @@ public class CuentaServiceImpl implements CuentaService {
             throw new RuntimeException("No se puede eliminar. La cuenta no existe.");
         }
         cuentaRepository.deleteById(id);
+    }
+
+    @Override
+    public CuentaDTO obtenerCuentaPorClienteId(Long clienteId) {
+        Cuenta cuenta = cuentaRepository.findByClienteId(clienteId)
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada para el cliente con id: " + clienteId));
+         return new CuentaDTO(cuenta);
     }
 }

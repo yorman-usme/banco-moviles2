@@ -39,7 +39,7 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteDTO crearCliente(ClienteCreateDTO clienteDTO) {
         Cliente cliente = clienteMapper.toEntity(clienteDTO);
 
-        // 🔹 Validaciones (igual que antes)
+        // Validaciones
         if (cliente.getIdentificacion() == null || cliente.getIdentificacion().isBlank()) {
             throw new RuntimeException("La identificación no puede estar vacía.");
         }
@@ -50,19 +50,21 @@ public class ClienteServiceImpl implements ClienteService {
             throw new RuntimeException("Ya existe un cliente con esta identificación.");
         }
 
-        if (cliente.getName() == null || cliente.getName().isBlank()) {
+        if (cliente.getNombre() == null || cliente.getNombre().isBlank()) {
             throw new RuntimeException("El nombre es obligatorio.");
         }
-        if (!cliente.getName().matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+        if (!cliente.getNombre().matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
             throw new RuntimeException("El nombre solo puede contener letras.");
         }
 
-        if (cliente.getApellido() == null || cliente.getApellido().isBlank()) {
-            throw new RuntimeException("El apellido es obligatorio.");
+        if (cliente.getPassword() == null || cliente.getPassword().isBlank()) {
+            throw new RuntimeException("La contraseña es obligatoria.");
         }
 
-        if (cliente.getCorreo_electronico() != null &&
-            !cliente.getCorreo_electronico().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+        if (cliente.getCorreoElectronico() == null || cliente.getCorreoElectronico().isBlank()) {
+            throw new RuntimeException("El correo electrónico es obligatorio.");
+        }
+        if (!cliente.getCorreoElectronico().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new RuntimeException("El correo electrónico no es válido.");
         }
 
@@ -73,5 +75,17 @@ public class ClienteServiceImpl implements ClienteService {
 
         Cliente guardado = clienteRepository.save(cliente);
         return clienteMapper.toDTO(guardado);
+    }
+
+    @Override
+    public ClienteDTO autenticar(String correoElectronico, String password) {
+        Cliente cliente = clienteRepository.findByCorreoElectronico(correoElectronico)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        if (!cliente.getPassword().equals(password)) { // En producción usar BCrypt
+            throw new RuntimeException("Contraseña incorrecta");
+        }
+        
+        return clienteMapper.toDTO(cliente);
     }
 }

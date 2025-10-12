@@ -18,5 +18,6 @@ public interface TransaccionMapper {
 
     // De CreateDTO a entidad
     @Mapping(source = "cuentaId", target = "cuenta.id")
+    
     Transaccion toEntity(TransaccionCreateDTO transaccionCreateDTO);
 }
