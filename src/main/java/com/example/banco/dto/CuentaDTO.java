@@ -7,9 +7,11 @@ import lombok.Data;
 @Data
 public class CuentaDTO {
     public CuentaDTO(Cuenta cuenta) {
-        //TODO Auto-generated constructor stub
+        this.id = cuenta.getId();
+        this.numeroCuenta = String.valueOf(cuenta.getNumeroCuenta());
+        this.clienteId = cuenta.getCliente().getId();
     }
     private Long id;
-    private int numeroCuenta;
+    private String numeroCuenta;
     private Long clienteId; 
 }

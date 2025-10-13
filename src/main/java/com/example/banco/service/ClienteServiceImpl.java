@@ -10,13 +10,18 @@ import com.example.banco.dto.ClienteDTO;
 import com.example.banco.dto.ClienteCreateDTO;
 import com.example.banco.mapper.ClienteMapper;
 import com.example.banco.modelo.Cliente;
+import com.example.banco.modelo.Cuenta;
 import com.example.banco.repository.ClienteRepository;
+import com.example.banco.repository.CuentaRepository;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private CuentaRepository cuentaRepository;
 
     @Autowired
     private ClienteMapper clienteMapper;
@@ -39,7 +44,7 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteDTO crearCliente(ClienteCreateDTO clienteDTO) {
         Cliente cliente = clienteMapper.toEntity(clienteDTO);
 
-        // Validaciones
+        // 🔎 Validaciones
         if (cliente.getIdentificacion() == null || cliente.getIdentificacion().isBlank()) {
             throw new RuntimeException("La identificación no puede estar vacía.");
         }
@@ -68,24 +73,37 @@ public class ClienteServiceImpl implements ClienteService {
             throw new RuntimeException("El correo electrónico no es válido.");
         }
 
-        if (cliente.getTelefono() != null &&
-            !cliente.getTelefono().matches("\\d{7,10}")) {
+        if (cliente.getTelefono() != null && !cliente.getTelefono().matches("\\d{7,10}")) {
             throw new RuntimeException("El teléfono debe contener entre 7 y 10 dígitos.");
         }
 
+        // 💾 Guardar cliente primero
         Cliente guardado = clienteRepository.save(cliente);
+
+        // 💳 Crear cuenta automáticamente
+        Cuenta cuenta = new Cuenta();
+        cuenta.setCliente(guardado);
+        cuenta.setNumeroCuenta(generarNumeroCuenta());
+        cuenta.setSaldo(0.0); // saldo inicial
+        cuentaRepository.save(cuenta);
+
         return clienteMapper.toDTO(guardado);
+    }
+
+    private String generarNumeroCuenta() {
+        // 🔢 Generar número aleatorio de 10 dígitos
+        return String.valueOf((long) (Math.random() * 9000000000L) + 1000000000L);
     }
 
     @Override
     public ClienteDTO autenticar(String correoElectronico, String password) {
         Cliente cliente = clienteRepository.findByCorreoElectronico(correoElectronico)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
-        if (!cliente.getPassword().equals(password)) { // En producción usar BCrypt
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!cliente.getPassword().equals(password)) {
             throw new RuntimeException("Contraseña incorrecta");
         }
-        
+
         return clienteMapper.toDTO(cliente);
     }
 }

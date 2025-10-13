@@ -1,7 +1,6 @@
 package com.example.banco.modelo;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
+@Table(name = "cuentas")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,8 +19,7 @@ public class Cuenta {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Min(value = 1, message = "El número de cuenta debe ser mayor que cero")
-    private int numeroCuenta;
+    private String numeroCuenta;
 
     @Column(nullable = false)
     private double saldo;
@@ -31,4 +30,12 @@ public class Cuenta {
 
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaccion> transacciones;
+
+    public void setNumeroCuenta(String generarNumeroCuenta) {
+        this.numeroCuenta = String.valueOf(Integer.parseInt(generarNumeroCuenta));
+    }
+
+    public void setNumeroCuenta(int numeroCuenta2) {
+        this.numeroCuenta = String.valueOf(numeroCuenta2);
+    }
 }

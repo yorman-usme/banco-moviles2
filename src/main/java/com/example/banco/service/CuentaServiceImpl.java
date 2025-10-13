@@ -11,6 +11,8 @@ import java.util.List;
 @Service
 public class CuentaServiceImpl implements CuentaService {
 
+    
+
     @Autowired
     private CuentaRepository cuentaRepository;
 
@@ -27,9 +29,10 @@ public class CuentaServiceImpl implements CuentaService {
 
     @Override
     public Cuenta crearCuenta(Cuenta cuenta) {
-        if (cuenta.getCliente() == null) {
+        if (cuenta.getCliente() == null || cuenta.getCliente().getId() == null) {
             throw new RuntimeException("La cuenta debe estar asociada a un cliente.");
         }
+
         return cuentaRepository.save(cuenta);
     }
 
