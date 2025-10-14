@@ -18,6 +18,7 @@ public class Cuenta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    
     @Column(nullable = false, unique = true)
     private String numeroCuenta;
 
@@ -31,11 +32,8 @@ public class Cuenta {
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaccion> transacciones;
 
+    
     public void setNumeroCuenta(String generarNumeroCuenta) {
-        this.numeroCuenta = String.valueOf(Integer.parseInt(generarNumeroCuenta));
-    }
-
-    public void setNumeroCuenta(int numeroCuenta2) {
-        this.numeroCuenta = String.valueOf(numeroCuenta2);
+        this.numeroCuenta = generarNumeroCuenta;
     }
 }

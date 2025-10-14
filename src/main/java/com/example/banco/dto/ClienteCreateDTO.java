@@ -25,4 +25,10 @@ public class ClienteCreateDTO {
     
     @NotBlank(message = "El teléfono es requerido")
     private String telefono;
+
+    @NotBlank(message = "La dirección es requerida")
+    private String direccion;
+
+    @NotBlank(message = "La fecha de nacimiento es requerida")
+    private String fecha_nacimiento;
 }
