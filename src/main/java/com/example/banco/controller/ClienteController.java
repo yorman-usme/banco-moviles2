@@ -1,5 +1,5 @@
 package com.example.banco.controller;
-
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +30,11 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ClienteDTO crearCliente(@RequestBody ClienteCreateDTO nuevoCliente) {
+    public ClienteDTO crearCliente(@Valid @RequestBody ClienteCreateDTO nuevoCliente) { 
+        // Al usar @Valid, si falla una regla (como @NotBlank), Spring lanza una excepción antes de llamar al service.
         return clienteService.crearCliente(nuevoCliente);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {

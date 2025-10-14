@@ -1,5 +1,7 @@
 package com.example.banco.modelo;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,12 +23,17 @@ public class Transaccion {
 
     @Column(nullable = false, length = 20)
     @NotBlank(message = "El tipo de transacción es obligatorio")
-    @Pattern(regexp = "DEPOSITO|RETIRO", message = "El tipo debe ser DEPOSITO o RETIRO")
+    @Pattern(regexp = "DEPOSITO|RETIRO|TRANSFERENCIA", message = "El tipo debe ser DEPOSITO, RETIRO o TRANSFERENCIA")
     private String tipo;
 
     @Column(nullable = false)
     @Positive(message = "El monto debe ser mayor que cero")
     private double monto;
+
+    private LocalDateTime fecha = LocalDateTime.now();
+
+    private String cuentaOrigenNumero;
+    private String cuentaDestinoNumero;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cuenta_id", nullable = false)

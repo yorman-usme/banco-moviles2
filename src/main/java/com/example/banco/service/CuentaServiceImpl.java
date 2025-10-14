@@ -1,5 +1,5 @@
 package com.example.banco.service;
-
+import com.example.banco.mapper.CuentaMapper;
 import com.example.banco.dto.CuentaDTO;
 import com.example.banco.modelo.Cuenta;
 import com.example.banco.repository.CuentaRepository;
@@ -16,10 +16,15 @@ public class CuentaServiceImpl implements CuentaService {
     @Autowired
     private CuentaRepository cuentaRepository;
 
+    @Autowired
+    private CuentaMapper cuentaMapper; 
+
     @Override
     public List<Cuenta> obtenerCuentas() {
         return cuentaRepository.findAll();
     }
+
+    
 
     @Override
     public Cuenta obtenerCuentaPorId(Long id) {
@@ -57,6 +62,6 @@ public class CuentaServiceImpl implements CuentaService {
     public CuentaDTO obtenerCuentaPorClienteId(Long clienteId) {
         Cuenta cuenta = cuentaRepository.findByClienteId(clienteId)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada para el cliente con id: " + clienteId));
-         return new CuentaDTO(cuenta);
+         return cuentaMapper.toDTO(cuenta);
     }
 }

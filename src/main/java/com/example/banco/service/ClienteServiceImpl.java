@@ -91,8 +91,11 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     private String generarNumeroCuenta() {
-        // 🔢 Generar número aleatorio de 10 dígitos
-        return String.valueOf((long) (Math.random() * 9000000000L) + 1000000000L);
+        String numero;
+        do {
+            numero = String.valueOf((long) (Math.random() * 9000000000L) + 1000000000L);
+        } while (cuentaRepository.findByNumeroCuenta(numero).isPresent());
+        return numero;
     }
 
     @Override
