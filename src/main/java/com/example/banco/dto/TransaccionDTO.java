@@ -11,4 +11,6 @@ public class TransaccionDTO {
     private double monto;
     private LocalDateTime fecha;
     private Long cuentaId; 
+    private String cuentaOrigenNumero;
+    private String cuentaDestinoNumero;
 }

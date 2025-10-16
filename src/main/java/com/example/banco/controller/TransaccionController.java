@@ -7,7 +7,11 @@ import com.example.banco.mapper.TransaccionMapper;
 import com.example.banco.modelo.Transaccion;
 
 import com.example.banco.service.TransaccionService;
+
+import jakarta.validation.Valid;
+import com.example.banco.dto.RetiroRequest; 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -25,7 +29,7 @@ public class TransaccionController {
     @Autowired
     private TransaccionMapper transaccionMapper;
 
-        @GetMapping
+    @GetMapping
     public List<TransaccionDTO> obtenerTodas() {
         return transaccionService.obtenerTransacciones()
                 .stream()
@@ -33,7 +37,7 @@ public class TransaccionController {
                 .collect(Collectors.toList());
     }
 
-        @GetMapping("/cuenta/{cuentaId}")
+    @GetMapping("/cuenta/{cuentaId}")
     public List<TransaccionDTO> obtenerPorCuentaId(@PathVariable Long cuentaId) {
         // Asumiendo que has agregado este método en tu TransaccionService:
         List<Transaccion> transacciones = transaccionService.obtenerTransaccionesPorCuenta(cuentaId);
@@ -69,33 +73,51 @@ public class TransaccionController {
     }
 
     @PostMapping("/depositar")
-    public ResponseEntity<String> depositar(@RequestBody Map<String, Object> datos) {
-    String numeroCuenta = datos.get("numeroCuenta").toString();
-    Double monto = Double.valueOf(datos.get("monto").toString());
+    public ResponseEntity<?> depositar(@RequestBody Map<String, Object> datos) {
+        try {
+                if (!datos.containsKey("numeroCuenta") || !datos.containsKey("monto")) {
+                    return ResponseEntity.badRequest().body("Faltan campos requeridos: numeroCuenta o monto");
+                }
 
-    try {
-        String mensaje = transaccionService.depositar(numeroCuenta, monto);
-        return ResponseEntity.ok(mensaje);
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+                String numeroCuenta = datos.get("numeroCuenta").toString();
+                Double monto = Double.valueOf(datos.get("monto").toString());
+
+                Transaccion transaccion = transaccionService.depositar(numeroCuenta, monto);
+                return ResponseEntity.ok(transaccion);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.badRequest().body("Error al procesar el depósito: " + e.getMessage());
+            }
     }
-}
+
+        @PostMapping("/retirar") // <-- Nuevo endpoint
+    public ResponseEntity<String> realizarRetiro(@Valid @RequestBody RetiroRequest request) {
+        try {
+            transaccionService.retirar(request.getNumeroCuenta(), request.getMonto());
+            return ResponseEntity.ok("Retiro realizado con éxito.");
+        } catch (IllegalArgumentException e) {
+            // Error de saldo insuficiente o cuenta no encontrada
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al realizar el retiro.");
+        }
+    }
 
     @PostMapping("/transferir")
-    public ResponseEntity<TransaccionDTO> transferir(@RequestBody Map<String, Object> datos) {
+    public ResponseEntity<String> transferir(@RequestBody Map<String, Object> datos) {
    try {
         Long cuentaOrigenId = Long.valueOf(datos.get("cuentaOrigenId").toString());
         Long cuentaDestinoId = Long.valueOf(datos.get("cuentaDestinoId").toString());
         Double monto = Double.valueOf(datos.get("monto").toString());
 
-         Transaccion transaccion = transaccionService.transferirFondos(cuentaOrigenId, cuentaDestinoId, monto);
+        transaccionService.transferirFondos(cuentaOrigenId, cuentaDestinoId, monto);
 
-         TransaccionDTO transaccionDTO = transaccionMapper.toDTO(transaccion);
-
-        return ResponseEntity.ok(transaccionDTO);
+        return ResponseEntity.ok("Transferencia realizada con éxito.");
     } catch (Exception e) {
-        return ResponseEntity.badRequest().build();
-    }
+        e.printStackTrace();
+        return ResponseEntity.badRequest().body("Error al transferir fondos: " + e.getMessage());
     }
 
+}
 }

@@ -21,9 +21,10 @@ public class Transaccion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     @NotBlank(message = "El tipo de transacción es obligatorio")
-    @Pattern(regexp = "DEPOSITO|RETIRO|TRANSFERENCIA", message = "El tipo debe ser DEPOSITO, RETIRO o TRANSFERENCIA")
+    @Pattern(regexp = "DEPOSITO|RETIRO|TRANSFERENCIA_SALIDA|TRANSFERENCIA_ENTRADA", 
+        message = "El tipo debe ser DEPOSITO, RETIRO, TRANSFERENCIA_SALIDA o TRANSFERENCIA_ENTRADA")
     private String tipo;
 
     @Column(nullable = false)

@@ -7,6 +7,7 @@ import com.example.banco.repository.TransaccionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,20 +36,30 @@ public class TransaccionServiceImpl implements TransaccionService {
         cuentaRepository.save(cuentaDestino);
 
 
-        // Registrar transacción
-        Transaccion transaccion = new Transaccion();
-        transaccion.setCuenta(cuentaOrigen);
-        transaccion.setMonto(monto);
-        transaccion.setTipo("TRANSFERENCIA");
-        transaccion.setCuentaOrigenNumero(cuentaOrigen.getNumeroCuenta());
-        transaccion.setCuentaDestinoNumero(cuentaDestino.getNumeroCuenta());
-        transaccionRepository.save(transaccion);
+        Transaccion salida = new Transaccion();
+        salida.setCuenta(cuentaOrigen);
+        salida.setMonto(monto);
+        salida.setTipo("TRANSFERENCIA_SALIDA");
+        salida.setCuentaOrigenNumero(cuentaOrigen.getNumeroCuenta());
+        salida.setCuentaDestinoNumero(cuentaDestino.getNumeroCuenta());
+        salida.setFecha(LocalDateTime.now());
+        transaccionRepository.save(salida);
 
-        return transaccion;
+        // Registrar transacción de entrada
+        Transaccion entrada = new Transaccion();
+        entrada.setCuenta(cuentaDestino);
+        entrada.setMonto(monto);
+        entrada.setTipo("TRANSFERENCIA_ENTRADA");
+        entrada.setCuentaOrigenNumero(cuentaOrigen.getNumeroCuenta());
+        entrada.setCuentaDestinoNumero(cuentaDestino.getNumeroCuenta());
+        entrada.setFecha(LocalDateTime.now());
+        transaccionRepository.save(entrada);
+
+        return salida;
     }
 
     @Override
-    public String depositar(String numeroCuenta, Double monto) {
+    public Transaccion depositar(String numeroCuenta, Double monto) {
         if (monto <= 0) {
             throw new RuntimeException("El monto debe ser mayor que cero.");
         }
@@ -63,11 +74,39 @@ public class TransaccionServiceImpl implements TransaccionService {
         Transaccion transaccion = new Transaccion();
         transaccion.setCuenta(cuenta);
         transaccion.setMonto(monto);
-        transaccion.setTipo("Depósito");
+        transaccion.setTipo("DEPOSITO");
+        transaccion.setFecha(LocalDateTime.now());
         transaccionRepository.save(transaccion);
 
-        return "Depósito exitoso. Nuevo saldo: " + cuenta.getSaldo();
+        return transaccion;
     }
+
+
+@Override
+public Transaccion retirar(String numeroCuenta, Double monto) {
+    // 1. Buscar la cuenta
+    Cuenta cuenta = cuentaRepository.findByNumeroCuenta(numeroCuenta)
+            .orElseThrow(() -> new RuntimeException("Cuenta no encontrada."));
+
+    // 2. Validación de Saldo (CRÍTICO)
+    if (cuenta.getSaldo() < monto) {
+        throw new IllegalArgumentException("Saldo insuficiente para realizar el retiro.");
+    }
+
+    // 3. Realizar la resta y guardar
+    cuenta.setSaldo(cuenta.getSaldo() - monto);
+    cuentaRepository.save(cuenta);
+
+    // 4. Registrar transacción
+    Transaccion transaccion = new Transaccion();
+    transaccion.setCuenta(cuenta);
+    transaccion.setMonto(monto);
+    transaccion.setTipo("RETIRO"); // <-- Tipo correcto
+    transaccion.setFecha(LocalDateTime.now());
+    transaccionRepository.save(transaccion);
+
+    return transaccion;
+}
 
 
     @Override

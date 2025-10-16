@@ -8,13 +8,13 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CuentaMapper {
+  // De Entidad a DTO
  @Mapping(source = "cliente.id", target = "clienteId")
   CuentaDTO toDTO(Cuenta cuenta);
 
 
     @Mapping(source = "clienteId", target = "cliente.id") 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "saldo", ignore = true) // Saldo se maneja en el servicio 
-    @Mapping(target = "transacciones", ignore = true) // Ignorar colección
+    @Mapping(target = "transacciones", ignore = true) 
 Cuenta toEntity(CuentaCreateDTO cuentaCreateDTO);
 }

@@ -7,9 +7,10 @@ public interface TransaccionService {
     List<Transaccion> obtenerTransacciones();
     Transaccion obtenerTransaccionPorId(Long id);
     Transaccion crearTransaccion(Transaccion transaccion);
-    Transaccion actualizarTransaccion(Long id, Transaccion transaccion);
+    Transaccion actualizarTransaccion(Long id, Transaccion transaccionActualizada);
     void eliminarTransaccion(Long id);
     Transaccion transferirFondos(Long cuentaOrigenId, Long cuentaDestinoId, Double monto);
     List<Transaccion> obtenerTransaccionesPorCuenta(Long cuentaId);
-    String depositar(String numeroCuenta, Double monto);
+    Transaccion depositar(String numeroCuenta, Double monto);
+    Transaccion retirar(String numeroCuenta, Double monto);
 }

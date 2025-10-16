@@ -7,5 +7,6 @@ import lombok.Data;
 public class CuentaDTO {
     private Long id;
     private String numeroCuenta;
+    private double saldo;
     private Long clienteId; 
 }

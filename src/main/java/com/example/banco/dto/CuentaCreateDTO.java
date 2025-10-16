@@ -13,4 +13,7 @@ public class CuentaCreateDTO {
     @NotNull(message = "El ID del cliente es obligatorio")
     @Min(value = 1, message = "El ID del cliente debe ser un número válido mayor que cero")
     private Long clienteId;
+
+    private double saldo=0.0;
+
 }
